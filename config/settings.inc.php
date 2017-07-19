@@ -10,7 +10,7 @@ define('_PS_CACHE_ENABLED_', '1');
 define('_COOKIE_KEY_', 'W9APfOvvC5m28wgRy3FSqzJ3sPZXmMjsygbPLzBABxE5A7Suowj1arb9');
 define('_COOKIE_IV_', 'SwxTwg3o');
 define('_PS_CREATION_DATE_', '2016-07-15');
-if (!defined('_PS_VERSION_'))
-	define('_PS_VERSION_', '1.6.1.6');
+define('_PS_VERSION_', '1.6.1.15');
 define('_RIJNDAEL_KEY_', 'AP2TOBhcX8tuFC9ys2bOQWrtrQj4jtnj');
 define('_RIJNDAEL_IV_', '0AHQsplEB+dwJeEeX8onPQ==');
+define('_PS_DIRECTORY_', '/../../');

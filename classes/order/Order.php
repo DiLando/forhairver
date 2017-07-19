@@ -753,17 +753,17 @@ class OrderCore extends ObjectModel
         if (count($products) < 1) {
             return false;
         }
+
         $virtual = true;
+
         foreach ($products as $product) {
-            $pd = ProductDownload::getIdFromIdProduct((int)$product['product_id']);
-            if ($pd && Validate::isUnsignedInt($pd) && $product['download_hash'] && $product['display_filename'] != '') {
-                if ($strict === false) {
-                    return true;
-                }
-            } else {
-                $virtual &= false;
+            if ($strict === false && (bool)$product['is_virtual']) {
+                return true;
             }
+
+            $virtual &= (bool)$product['is_virtual'];
         }
+
         return $virtual;
     }
 
@@ -1189,9 +1189,13 @@ class OrderCore extends ObjectModel
         if ($number) {
             $sql .= (int)$number;
         } else {
-            $sql .= '(SELECT new_number FROM (SELECT (MAX(`number`) + 1) AS new_number
-			FROM `'._DB_PREFIX_.'order_invoice`'.(Configuration::get('PS_INVOICE_RESET') ?
-                ' WHERE DATE_FORMAT(`date_add`, "%Y") = '.(int)date('Y') : '').') AS result)';
+            // Find the next number
+            $new_number_sql = 'SELECT (MAX(`number`) + 1) AS new_number
+                FROM `'._DB_PREFIX_.'order_invoice`'.(Configuration::get('PS_INVOICE_RESET') ?
+                ' WHERE DATE_FORMAT(`date_add`, "%Y") = '.(int)date('Y') : '');
+            $new_number = DB::getInstance()->getValue($new_number_sql);
+            
+            $sql .= (int)$new_number;
         }
 
         $sql .= ' WHERE `id_order_invoice` = '.(int)$order_invoice_id;
@@ -1255,6 +1259,7 @@ class OrderCore extends ObjectModel
 				UPDATE `'._DB_PREFIX_.'order_detail`
 				SET `id_order_invoice` = '.(int)$order_invoice->id.'
 				WHERE `id_order` = '.(int)$order_invoice->id_order);
+            Cache::clean('objectmodel_OrderDetail_*');
 
             // Update order payment
             if ($use_existing_payment) {
@@ -2277,13 +2282,8 @@ class OrderCore extends ObjectModel
                 $order_discount_tax_excl -= $order_cart_rule['value_tax_excl'];
             }
         }
-
-        $products_tax    = $this->total_products_wt - $this->total_products;
-        $discounts_tax    = $this->total_discounts_tax_incl - $this->total_discounts_tax_excl;
-
-        // We add $free_shipping_tax because when there is free shipping, the tax that would
-        // be paid if there wasn't is included in $discounts_tax.
-        $expected_total_tax = $products_tax - $discounts_tax + $free_shipping_tax;
+        
+        $expected_total_tax = $this->total_products_wt - $this->total_products;
         $actual_total_tax = 0;
         $actual_total_base = 0;
 

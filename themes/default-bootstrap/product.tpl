@@ -416,11 +416,11 @@
 						<tbody>
 						{foreach from=$quantity_discounts item='quantity_discount' name='quantity_discounts'}
 							{if $quantity_discount.price >= 0 || $quantity_discount.reduction_type == 'amount'}
-								{$realDiscountPrice=$productPriceWithoutReduction|floatval-$quantity_discount.real_value|floatval}
+								{$realDiscountPrice=$quantity_discount.base_price|floatval-$quantity_discount.real_value|floatval}
 							{else}
-								{$realDiscountPrice=$productPriceWithoutReduction|floatval-($productPriceWithoutReduction*$quantity_discount.reduction)|floatval}
+								{$realDiscountPrice=$quantity_discount.base_price|floatval*(1 - $quantity_discount.reduction)|floatval}
 							{/if}
-							<tr id="quantityDiscount_{$quantity_discount.id_product_attribute}" class="quantityDiscount_{$quantity_discount.id_product_attribute}" data-real-discount-value="{convertPrice price = $realDiscountPrice}" data-discount-type="{$quantity_discount.reduction_type}" data-discount="{$quantity_discount.real_value|floatval}" data-discount-quantity="{$quantity_discount.quantity|intval}">
+							<tr class="quantityDiscount_{$quantity_discount.id_product_attribute}" data-real-discount-value="{convertPrice price = $realDiscountPrice}" data-discount-type="{$quantity_discount.reduction_type}" data-discount="{$quantity_discount.real_value|floatval}" data-discount-quantity="{$quantity_discount.quantity|intval}">
 								<td>
 									{$quantity_discount.quantity|intval}
 								</td>
@@ -497,12 +497,14 @@
 			{include file="$tpl_dir./product-list.tpl" products=$packItems}
 		</section>
 		{/if}
+		{if (isset($HOOK_PRODUCT_TAB) && $HOOK_PRODUCT_TAB) || (isset($HOOK_PRODUCT_TAB_CONTENT) && $HOOK_PRODUCT_TAB_CONTENT)}
 		<!--HOOK_PRODUCT_TAB -->
 		<section class="page-product-box">
 			{$HOOK_PRODUCT_TAB}
 			{if isset($HOOK_PRODUCT_TAB_CONTENT) && $HOOK_PRODUCT_TAB_CONTENT}{$HOOK_PRODUCT_TAB_CONTENT}{/if}
 		</section>
 		<!--end HOOK_PRODUCT_TAB -->
+		{/if}
 		{if isset($accessories) && $accessories}
 			<!--Accessories -->
 			<section class="page-product-box">
@@ -525,7 +527,7 @@
 											</div>
 										</div>
 										<div class="s_title_block">
-											<h5 itemprop="name" class="product-name">
+											<h5 class="product-name">
 												<a href="{$accessoryLink|escape:'html':'UTF-8'}">
 													{$accessory.name|truncate:20:'...':true|escape:'html':'UTF-8'}
 												</a>

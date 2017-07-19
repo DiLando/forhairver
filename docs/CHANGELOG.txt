@@ -24,6 +24,173 @@ International Registred Trademark & Property of PrestaShop SA
 Release Notes for PrestaShop 1.6
 --------------------------------
 ####################################
+#   v1.6.1.15 - (2017-06-23)
+####################################
+
+####################################
+#   v1.6.1.14 - (2017-06-05)
+####################################
+
+	Fixed bugs:
+    BO: Pipes in product names in autocomplete
+    BO: Fix taxes in credit slip
+    BO: Fix the refresh button of the stats bloc in the products list
+    BO: Add API_KEY field to display the map
+    BO: Fix customer message order
+    BO: Set correct value on load to display the right tab
+    BO: Translation of return merchandise fields
+    BO: Fix html interpreted as text in carrier's wizard summary
+    BO: Fix non well formed numeric value
+    BO: Fix error in HelperOptions
+
+    FO: Fix popover with multiple wishlists
+    FO: Shipping cost indication wrong
+    FO: Fix 404 bug when query string contains a LF
+    FO: Fix manufacturer pagination
+    FO: Fix JS error "Uncaught ReferenceError"
+
+    CO: Increase carrier delay length
+    CO: Send Http 500 error code when we can't connect to the database instead of a 200 code
+    CO: make OrderInvoice overridable
+
+    LO: Replace EN (US) by EN (UK) in UK localization pack
+
+
+####################################
+#   v1.6.1.13 - (2017-04-10)
+####################################
+
+	Fixed bugs:
+    CO: Optimization for Cart Rules
+    CO: Fix url rewrite setting not used on multishop
+    CO: Clean order detail cache after setting invoice id
+    CO: Update Israel localization
+    CO: Remove unused variables declarations and assignations
+
+    BO: Error importing theme when cache directory is cleared
+    BO: Allow stock transfer between warehouses in multishop context
+    BO: Fix search in Advanced Stock Management
+    BO: Use native round instead of 2 forced decimals
+    BO: Replace comma with dot in special price
+    BO: Don't double encode test email
+    BO: Generate PDF invoices in user language
+    BO: Fixes on must-have module upgrade
+
+    FO: Fix Combination filter in stock management section
+    FO: Fix price display when quantity discount on combination
+    FO: Style categories tree in footer
+
+    IN: Allow 255 char to company field in Adress
+    IN: Fix install language
+
+####################################
+#   v1.6.1.12 - (2017-03-14)
+####################################
+
+	Fixed bugs:
+	CO: Deflate .svg files
+	CO: Webservices now show PS validation errors
+	CO: Update Israel VAT to 17%
+	CO: Fix bag with Cart::getPackageSthippingCost cache id
+	CO: Fix send to multiple addresses with different names
+	CO: Add missing option to bcc multiple addresses in Mail::send()
+	CO: Use shop email as sender for template order_customer_comment
+	CO: Fix 7.1 compatibility
+	CO: Update Doc import files
+
+	BO: Modification permission on Theme Page and option
+	BO: Modification permission on Theme Page and option
+	BO: Fix error when creating a zero value in the attribute size
+	BO: Fix bug while filtering Credit Slip
+	BO: Fix doubled quantity when ordering a customizable product
+	BO: Callback on HelperList should have highest priority
+	BO: Avoid overwriting $token in global Smarty context.
+
+	FO: Product reference is now available in blockbestsellers module
+	FO: Fix ecotax rounded twice
+	FO: Bugfix JS with advancedEuCompliance
+	FO: Fix product without combination hashchange
+
+####################################
+#   v1.6.1.11 - (2017-01-16)
+####################################
+
+	Fixed bugs:
+	CO: Fix detection of APCu on Performance page
+	CO: Cast id_cart to int to keep it in the SQL query
+	CO: Performance opt on scandir() usage
+	CO: Fix for MySQL error 1093 in generating the invoice number
+	CO: Fix misuse of getimagesize returned informations
+	CO: Fixed method Order::isVirtual
+	CO: PHP 7.1 Fatal error: operator not supported in DbQuery.php
+	CO: Fix multiple configuration entry for PERCENT_PRODUCT_OUT_OF_STOCK_EXPIRE
+
+	BO: Fixed category search in product association tab
+	BO: Fix date filter when entering BO
+	BO: Fixed product customization duplication
+	BO: Uploader helper multiple files undefined _max_files
+	BO: Orders amount currency fixed
+	BO: Remove synchronous javascript call in translations
+
+	FO: Reset country in address page after error
+	FO: Fix & optimize search::find queries
+	FO: Re-instate default id for product list
+	FO: Accessory product names are not the product name (Schema.org)
+	FO: Fix grid view payment methods on small devices
+
+
+####################################
+#   v1.6.1.10 - (2016-11-25)
+####################################
+
+	Fixed bugs:
+
+	[-] MO : (3b0f90b) missing IF for PRODUCT_TAB
+
+	[-] BO : (3979614) Fix admin email translations
+
+
+	Improved/changed features:
+
+	[*] BO : (81d6f5b) Bring back email pattern value in case someone uses it
+
+
+
+
+
+####################################
+#   v1.6.1.7 - (2016-09-06)
+####################################
+
+	Fixed bugs:
+
+	[-] BO : (f19ae86) Solved problem with non-unserialized filters datas
+
+	[-] FO : (2636a31) Fix rouding error in ProductController (PSCSX-7566)
+
+
+	Improved/changed features:
+
+	[*] CORE : (e12c209) Fix a case where $context->smarty could be undefined
+
+
+	Others:
+
+	CO: Fixed cart rule removal with gift product
+	CO: Fix bug #PSCSX-6142 - wrong default cover id in webservice
+	CO: change visibility of installControllers() method
+	CO: Fix warning when duplicating products
+
+	FO: Add a hook on cart product line
+	FO: Solved problem with a situation when we'd like to use category thumb w/o category lead banner
+	FO : Prevent customer to view all codes
+
+	Resolved "price.toFixed is not a function" issue
+	PSCSX-7138 Bad discount computation when multiples tax rates are involved
+	Keep CMS HTML code when upgrading
+
+
+####################################
 #   v1.6.1.6 - (2016-06-15)
 ####################################
 
@@ -63,7 +230,7 @@ Release Notes for PrestaShop 1.6
 	[+] IN : (a1ce85c) All key must not be nullable
 
 
-	
+
 
 
 ####################################
@@ -127,7 +294,7 @@ Release Notes for PrestaShop 1.6
 	[+] TR : (30c4adc) Adding Vietnamese installer
 
 
-	
+
 
 
 ####################################
@@ -183,7 +350,7 @@ Release Notes for PrestaShop 1.6
 	[-] LO : (673d7fe) Fix Intra-EU VAT
 
 
-	
+
 
 
 ####################################
@@ -413,7 +580,7 @@ Release Notes for PrestaShop 1.6
 	[*] INSTALL : The 1.6.1.1 indexes are now safely removed
 
 
-	
+
 
 
 ####################################
@@ -662,7 +829,7 @@ Release Notes for PrestaShop 1.6
 	[+] TESTS : Add unit tests for PrestaShop#2867 minifyCSS() && ReplaceByAbsoluteURL()
 
 
-	
+
 
 
 ####################################
@@ -1497,7 +1664,7 @@ Release Notes for PrestaShop 1.6
 	[+] DBQUERY : improve to use SELECT or DELETE syntax.
 
 
-	
+
 
 
 

@@ -151,7 +151,7 @@ $locale = strtolower(Configuration::get('PS_LOCALE_LANGUAGE')).'_'.strtoupper(Co
 setlocale(LC_COLLATE, $locale.'.UTF-8', $locale.'.utf8');
 setlocale(LC_CTYPE, $locale.'.UTF-8', $locale.'.utf8');
 setlocale(LC_TIME, $locale.'.UTF-8', $locale.'.utf8');
-setlocale(LC_NUMERIC, 'fr_FR.UTF-8', 'fr_FR.utf8');
+setlocale(LC_NUMERIC, 'en_US.UTF-8', 'en_US.utf8');
 
 /* Instantiate cookie */
 $cookie_lifetime = defined('_PS_ADMIN_DIR_') ? (int)Configuration::get('PS_COOKIE_LIFETIME_BO') : (int)Configuration::get('PS_COOKIE_LIFETIME_FO');
@@ -198,6 +198,10 @@ if (!isset($language) || !Validate::isLoadedObject($language)) {
     $language = new Language(Configuration::get('PS_LANG_DEFAULT'));
 }
 $context->language = $language;
+
+/* Get smarty */
+require_once($currentDir.'/smarty.config.inc.php');
+$context->smarty = $smarty;
 
 if (!defined('_PS_ADMIN_DIR_')) {
     if (isset($cookie->id_customer) && (int)$cookie->id_customer) {
@@ -259,7 +263,3 @@ if (!defined('_MEDIA_SERVER_2_')) {
 if (!defined('_MEDIA_SERVER_3_')) {
     define('_MEDIA_SERVER_3_', Configuration::get('PS_MEDIA_SERVER_3'));
 }
-
-/* Get smarty */
-require_once($currentDir.'/smarty.config.inc.php');
-$context->smarty = $smarty;

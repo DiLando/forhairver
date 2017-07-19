@@ -1,5 +1,6 @@
 <?php
 
+global $_TABS;
 $_TABS = array();
 
 $_TABS['AdminDashboard'] = 'Tableau de bord';
@@ -25,6 +26,7 @@ $_TABS['AdminShopUrl'] = 'URL des boutiques';
 $_TABS['AdminBlockCategories'] = 'Bloc Catégories';
 $_TABS['AdminDashgoals'] = 'Objectifs';
 $_TABS['AdminThemeConfigurator'] = 'Configurateur de thème';
+$_TABS['AdminCronJobs'] = 'Tâches cron';
 $_TABS['AdminProducts'] = 'Produits';
 $_TABS['AdminCategories'] = 'Catégories';
 $_TABS['AdminTracking'] = 'Suivi';
@@ -106,6 +108,7 @@ $_TABS['AdminStockInstantState'] = 'État instantané du stock';
 $_TABS['AdminStockCover'] = 'Couverture du stock';
 $_TABS['AdminSupplyOrders'] = 'Commandes fournisseurs';
 $_TABS['AdminStockConfiguration'] = 'Paramètres';
+$_TABS['AdminOnboarding'] = 'Premiers pas';
 
 
 return $_TABS;

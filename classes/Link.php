@@ -376,7 +376,12 @@ class LinkCore
         if (Dispatcher::getInstance()->hasRoute('module-'.$module.'-'.$controller, $id_lang, $id_shop)) {
             return $this->getPageLink('module-'.$module.'-'.$controller, $ssl, $id_lang, $params);
         } else {
-            return $url.Dispatcher::getInstance()->createUrl('module', $id_lang, $params, $this->allow, '', $id_shop);
+            if ($id_shop) {
+                $allow = (int)Configuration::get('PS_REWRITING_SETTINGS', null, null, $id_shop);
+            } else {
+                $allow = $this->allow;
+            }
+            return $url.Dispatcher::getInstance()->createUrl('module', $id_lang, $params, $allow, '', $id_shop);
         }
     }
 
@@ -408,7 +413,7 @@ class LinkCore
         $not_default = false;
 
         // Check if module is installed, enabled, customer is logged in and watermark logged option is on
-        if (Configuration::get('WATERMARK_LOGGED') && (Module::isInstalled('watermark') && Module::isEnabled('watermark')) && isset(Context::getContext()->customer->id)) {
+        if (($type != '') && Configuration::get('WATERMARK_LOGGED') && (Module::isInstalled('watermark') && Module::isEnabled('watermark')) && isset(Context::getContext()->customer->id)) {
             $type .= '-'.Configuration::get('WATERMARK_HASH');
         }
 
@@ -656,7 +661,7 @@ class LinkCore
         return Language::getIsoById($id_lang).'/';
     }
 
-    protected function getBaseLink($id_shop = null, $ssl = null, $relative_protocol = false)
+    public function getBaseLink($id_shop = null, $ssl = null, $relative_protocol = false)
     {
         static $force_ssl = null;
 

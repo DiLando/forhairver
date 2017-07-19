@@ -863,10 +863,10 @@ class CartCore extends ObjectModel
         Cache::clean('Cart::getCartRules_'.$this->id.'-'.CartRule::FILTER_ACTION_REDUCTION);
         Cache::clean('Cart::getCartRules_'.$this->id.'-'.CartRule::FILTER_ACTION_GIFT);
 
-        Cache::clean('Cart::getOrderedCartRulesIds_'.$this->id.'-'.CartRule::FILTER_ACTION_ALL). '-ids';
-        Cache::clean('Cart::getOrderedCartRulesIds_'.$this->id.'-'.CartRule::FILTER_ACTION_SHIPPING). '-ids';
-        Cache::clean('Cart::getOrderedCartRulesIds_'.$this->id.'-'.CartRule::FILTER_ACTION_REDUCTION). '-ids';
-        Cache::clean('Cart::getOrderedCartRulesIds_'.$this->id.'-'.CartRule::FILTER_ACTION_GIFT). '-ids';
+        Cache::clean('Cart::getOrderedCartRulesIds_'.$this->id.'-'.CartRule::FILTER_ACTION_ALL. '-ids');
+        Cache::clean('Cart::getOrderedCartRulesIds_'.$this->id.'-'.CartRule::FILTER_ACTION_SHIPPING. '-ids');
+        Cache::clean('Cart::getOrderedCartRulesIds_'.$this->id.'-'.CartRule::FILTER_ACTION_REDUCTION. '-ids');
+        Cache::clean('Cart::getOrderedCartRulesIds_'.$this->id.'-'.CartRule::FILTER_ACTION_GIFT. '-ids');
 
         if ((int)$cartRule->gift_product) {
             $this->updateQty(1, $cartRule->gift_product, $cartRule->gift_product_attribute, false, 'up', 0, null, false);
@@ -971,7 +971,7 @@ class CartCore extends ObjectModel
         ));
 
         if ((int)$quantity <= 0) {
-            return $this->deleteProduct($id_product, $id_product_attribute, (int)$id_customization);
+            return $this->deleteProduct($id_product, $id_product_attribute, (int)$id_customization, 0, $auto_add_cart_rule);
         } elseif (!$product->available_for_order || (Configuration::get('PS_CATALOG_MODE') && !defined('_PS_ADMIN_DIR_'))) {
             return false;
         } else {
@@ -1012,7 +1012,7 @@ class CartCore extends ObjectModel
 
                 /* Delete product from cart */
                 if ($new_qty <= 0) {
-                    return $this->deleteProduct((int)$id_product, (int)$id_product_attribute, (int)$id_customization);
+                    return $this->deleteProduct((int)$id_product, (int)$id_product_attribute, (int)$id_customization, 0, $auto_add_cart_rule);
                 } elseif ($new_qty < $minimal_quantity) {
                     return -1;
                 } else {
@@ -1226,10 +1226,10 @@ class CartCore extends ObjectModel
         Cache::clean('Cart::getCartRules_'.$this->id.'-'.CartRule::FILTER_ACTION_REDUCTION);
         Cache::clean('Cart::getCartRules_'.$this->id.'-'.CartRule::FILTER_ACTION_GIFT);
 
-        Cache::clean('Cart::getCartRules_'.$this->id.'-'.CartRule::FILTER_ACTION_ALL). '-ids';
-        Cache::clean('Cart::getCartRules_'.$this->id.'-'.CartRule::FILTER_ACTION_SHIPPING). '-ids';
-        Cache::clean('Cart::getCartRules_'.$this->id.'-'.CartRule::FILTER_ACTION_REDUCTION). '-ids';
-        Cache::clean('Cart::getCartRules_'.$this->id.'-'.CartRule::FILTER_ACTION_GIFT). '-ids';
+        Cache::clean('Cart::getCartRules_'.$this->id.'-'.CartRule::FILTER_ACTION_ALL. '-ids');
+        Cache::clean('Cart::getCartRules_'.$this->id.'-'.CartRule::FILTER_ACTION_SHIPPING. '-ids');
+        Cache::clean('Cart::getCartRules_'.$this->id.'-'.CartRule::FILTER_ACTION_REDUCTION. '-ids');
+        Cache::clean('Cart::getCartRules_'.$this->id.'-'.CartRule::FILTER_ACTION_GIFT. '-ids');
 
         $result = Db::getInstance()->delete('cart_cart_rule', '`id_cart_rule` = '.(int)$id_cart_rule.' AND `id_cart` = '.(int)$this->id, 1);
 
@@ -1249,7 +1249,7 @@ class CartCore extends ObjectModel
      * @param int $id_customization Customization id
      * @return bool result
      */
-    public function deleteProduct($id_product, $id_product_attribute = null, $id_customization = null, $id_address_delivery = 0)
+    public function deleteProduct($id_product, $id_product_attribute = null, $id_customization = null, $id_address_delivery = 0, $auto_add_cart_rule = true)
     {
         if (isset(self::$_nbProducts[$this->id])) {
             unset(self::$_nbProducts[$this->id]);
@@ -1320,7 +1320,9 @@ class CartCore extends ObjectModel
             // refresh cache of self::_products
             $this->_products = $this->getProducts(true);
             CartRule::autoRemoveFromCart();
-            CartRule::autoAddToCart();
+            if ($auto_add_cart_rule) {
+                CartRule::autoAddToCart();
+            }
 
             return $return;
         }
@@ -2267,9 +2269,12 @@ class CartCore extends ObjectModel
             $total_price = $cart_rule['minimum_amount_tax'] ? $total_products_wt : $total_products;
             $total_price += $cart_rule['minimum_amount_tax'] && $cart_rule['minimum_amount_shipping'] ? $real_best_price : 0;
             $total_price += !$cart_rule['minimum_amount_tax'] && $cart_rule['minimum_amount_shipping'] ? $real_best_price_wt : 0;
-            if ($cart_rule['free_shipping'] && $cart_rule['carrier_restriction']
-                && in_array($cart_rule['id_cart_rule'], $cart_rules_in_cart)
-                && $cart_rule['minimum_amount'] <= $total_price) {
+            $condition = ($cart_rule['free_shipping'] && $cart_rule['carrier_restriction'] && $cart_rule['minimum_amount'] <= $total_price)?1:0;
+            if(isset($cart_rule['code']) && !empty($cart_rule['code'])){
+                $condition = ($cart_rule['free_shipping'] && $cart_rule['carrier_restriction'] && in_array($cart_rule['id_cart_rule'], $cart_rules_in_cart)
+                    && $cart_rule['minimum_amount'] <= $total_price)?1:0;
+            }
+            if ($condition) {
                 $cr = new CartRule((int)$cart_rule['id_cart_rule']);
                 if (Validate::isLoadedObject($cr) &&
                     $cr->checkValidity($context, in_array((int)$cart_rule['id_cart_rule'], $cart_rules_in_cart), false, false)) {
@@ -2769,7 +2774,7 @@ class CartCore extends ObjectModel
             $id_carrier = (int)$this->id_carrier;
         }
 
-        $cache_id = 'getPackageShippingCost_'.(int)$this->id.'_'.(int)$address_id.'_'.(int)$id_carrier.'_'.(int)$use_tax.'_'.(int)$default_country->id;
+        $cache_id = 'getPackageShippingCost_'.(int)$this->id.'_'.(int)$address_id.'_'.(int)$id_carrier.'_'.(int)$use_tax.'_'.(int)$default_country->id.'_'.(int)$id_zone;
         if ($products) {
             foreach ($products as $product) {
                 $cache_id .= '_'.(int)$product['id_product'].'_'.(int)$product['id_product_attribute'];
@@ -3993,7 +3998,7 @@ class CartCore extends ObjectModel
         $product_in_stock = 0;
         foreach ($this->getProducts() as $product) {
             if (!$exclusive) {
-                if (((int)$product['quantity_available'] - (int)$product['cart_quantity']) <= 0
+                if (((int)$product['quantity_available'] - (int)$product['cart_quantity']) < 0
                     && (!$ignore_virtual || !$product['is_virtual'])) {
                     return false;
                 }

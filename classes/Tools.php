@@ -576,7 +576,9 @@ class ToolsCore
     public static function getCountry($address = null)
     {
         $id_country = (int)Tools::getValue('id_country');
-        if (!$id_country && isset($address) && isset($address->id_country) && $address->id_country) {
+        if ($id_country && Validate::isInt($id_country)) {
+            return (int)$id_country;
+        } elseif (!$id_country && isset($address) && isset($address->id_country) && $address->id_country) {
             $id_country = (int)$address->id_country;
         } elseif (Configuration::get('PS_DETECT_COUNTRY') && isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
             preg_match('#(?<=-)\w\w|\w\w(?!-)#', $_SERVER['HTTP_ACCEPT_LANGUAGE'], $array);
@@ -813,7 +815,7 @@ class ToolsCore
      * @param Currency $currency_from if null we used the default currency
      * @param Currency $currency_to if null we used the default currency
      */
-    public static function convertPriceFull($amount, Currency $currency_from = null, Currency $currency_to = null)
+    public static function convertPriceFull($amount, Currency $currency_from = null, Currency $currency_to = null, $round = true)
     {
         if ($currency_from == $currency_to) {
             return $amount;
@@ -836,7 +838,10 @@ class ToolsCore
             // Convert to new currency
             $amount *= $currency_to->conversion_rate;
         }
-        return Tools::ps_round($amount, _PS_PRICE_COMPUTE_PRECISION_);
+        if ($round) {
+        	$amount = Tools::ps_round($amount, _PS_PRICE_COMPUTE_PRECISION_);
+        }
+        return $amount;
     }
 
     /**
@@ -2504,10 +2509,11 @@ class ToolsCore
         fwrite($write_fd, "AddType application/vnd.ms-fontobject .eot\n");
         fwrite($write_fd, "AddType font/ttf .ttf\n");
         fwrite($write_fd, "AddType font/otf .otf\n");
+        fwrite($write_fd, "AddType font/woff2 .woff2\n");
         fwrite($write_fd, "AddType application/x-font-woff .woff\n");
         fwrite($write_fd, "<IfModule mod_headers.c>
-	<FilesMatch \"\.(ttf|ttc|otf|eot|woff|svg)$\">
-		Header add Access-Control-Allow-Origin \"*\"
+	<FilesMatch \"\.(ttf|ttc|otf|eot|woff|woff2|svg)$\">
+		Header set Access-Control-Allow-Origin \"*\"
 	</FilesMatch>
 </IfModule>\n\n");
 
@@ -2527,6 +2533,7 @@ class ToolsCore
 	ExpiresByType image/vnd.microsoft.icon \"access plus 1 year\"
 	ExpiresByType application/font-woff \"access plus 1 year\"
 	ExpiresByType application/x-font-woff \"access plus 1 year\"
+	ExpiresByType font/woff2 \"access plus 1 year\"
 	ExpiresByType application/vnd.ms-fontobject \"access plus 1 year\"
 	ExpiresByType font/opentype \"access plus 1 year\"
 	ExpiresByType font/ttf \"access plus 1 year\"
@@ -2541,7 +2548,7 @@ class ToolsCore
 FileETag none
 <IfModule mod_deflate.c>
 	<IfModule mod_filter.c>
-		AddOutputFilterByType DEFLATE text/html text/css text/javascript application/javascript application/x-javascript font/ttf application/x-font-ttf font/otf application/x-font-otf font/opentype
+		AddOutputFilterByType DEFLATE text/html text/css text/javascript application/javascript application/x-javascript font/ttf application/x-font-ttf font/otf application/x-font-otf font/opentype image/svg+xml
 	</IfModule>
 </IfModule>\n\n";
             fwrite($write_fd, $cache_control);
