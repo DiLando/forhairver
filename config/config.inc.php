@@ -151,7 +151,7 @@ $locale = strtolower(Configuration::get('PS_LOCALE_LANGUAGE')).'_'.strtoupper(Co
 setlocale(LC_COLLATE, $locale.'.UTF-8', $locale.'.utf8');
 setlocale(LC_CTYPE, $locale.'.UTF-8', $locale.'.utf8');
 setlocale(LC_TIME, $locale.'.UTF-8', $locale.'.utf8');
-setlocale(LC_NUMERIC, 'en_US.UTF-8', 'en_US.utf8');
+setlocale(LC_NUMERIC, 'fr_FR.UTF-8', 'fr_FR.utf8');
 
 /* Instantiate cookie */
 $cookie_lifetime = defined('_PS_ADMIN_DIR_') ? (int)Configuration::get('PS_COOKIE_LIFETIME_BO') : (int)Configuration::get('PS_COOKIE_LIFETIME_FO');
